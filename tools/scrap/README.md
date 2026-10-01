@@ -10,6 +10,20 @@ Public API が開放されたら(設定画面に「APIキー」タブが出た�
 原本は公開リポジトリ https://github.com/ctenopoma/zenn_scraps_automate の `tools/scrap/` です。Zenn の GitHub 連携リポジトリには、このフォルダをコピーして使います(下の「導入」)。
 調査の経緯と Zenn のルールとの照合は、同じリポジトリの `docs/research/` にあります(05 がルールとの照合)。
 
+## 前提条件
+
+送り方によって変わります。Chrome の拡張機能が要るのは、普段の Chrome から送る方法(relay)だけです。
+
+| 送り方 | 必要なもの |
+| --- | --- |
+| 共通 | Zenn のアカウント、git、uv(Python 3.12 は uv が自動で用意する)、PyPI と zenn.dev への接続。Zenn の API キーは不要 |
+| 普段の Chrome から(relay) | Claude Code と Claude in Chrome 拡張(1.0.36 以降)。Anthropic のプランを直接契約していること(Pro / Max / Team / Enterprise)。`/login` でサインインしていること(API キーや `claude setup-token` の長期トークンでは連携が無効)。ブラウザは Chrome / Edge / ほかの Chromium 系で、WSL は非対応。`claude --chrome` で起動するか、`/chrome` で既定で有効にする。その Chrome で Zenn にログインし、拡張機能のサイト権限で zenn.dev を許可する。出典: https://code.claude.com/docs/en/chrome |
+| 専用プロファイルから(`post --execute`) | インストール済みの Chrome(既定)か Edge(`--channel msedge`)。専用プロファイルへのメールログイン(初回だけ)。Claude Code と拡張機能は不要。Chrome の起動と未ログインの判定までは確認済みで、ログインから投稿までは通して試していない |
+| Public API から(`--transport public-api`) | Zenn の API キー。2026-10 時点では一般ユーザーに発行されていない。模擬サーバーでのテストのみ |
+
+要らないもの: Node.js(テストの一部で使うだけで、なければそのテストは飛ばされる)、Playwright のブラウザのダウンロード(`playwright install`)、Python の個別インストール。
+動作を確認したのは Windows 11、uv 0.10.3、Chrome、Python 3.12(uv が用意したもの)です。macOS と Linux では試していません。導入手順のコマンドも PowerShell です。
+
 ## 守ること
 
 Zenn のルールとの照合(上記 05)で決めた条件です。ツールにも組み込んであります。
