@@ -1,0 +1,5 @@
+# 導入先のリポジトリの .gitignore を触らずに済むよう、ツールの生成物はここで除外する
+# (.venv は uv が自身の .gitignore で除外する)
+__pycache__/
+.pytest_cache/
+*.yml.tmp
