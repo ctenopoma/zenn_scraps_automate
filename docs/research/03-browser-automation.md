@@ -102,3 +102,9 @@
 - 【事実】GitHub は、JSON などの塊を Secret にしないよう推奨している（マスキングが漏れることがあるため）。Base64 などで加工した値も、別途マスク対象に登録が必要（https://docs.github.com/en/actions/reference/security/secure-use ）。
 - 【事実】GitHub ホストランナーは Azure の IP から接続する。【推測】自宅で発行したセッションをデータセンターの IP から使うと、異常検知に引っかかる可能性がある。
 - 【推測】Public API のキーであれば、これらの問題はほぼ解消する。
+
+## 2026-10-02 追記: B(Playwright でセッション管理)は Zenn のログインで弾かれた
+
+- 【事実】Playwright が起動した Chrome(専用プロファイル)から Zenn にメールでログインしようとして、ロボットの検証で弾かれた。回避はしない(05 の追記)。
+- 【事実】WSL(Ubuntu 24.04)では、Playwright の Chromium は sudo なしでは起動しなかった(`libnspr4.so` がない)。`playwright install-deps`(sudo)が要る。
+- 送信は、普段の Chrome の Claude in Chrome 拡張から CLI が作った JavaScript を実行する方式(relay)にした。D(拡張機能 / ユーザースクリプト)に近く、Cookie を取り出さない点も同じ。

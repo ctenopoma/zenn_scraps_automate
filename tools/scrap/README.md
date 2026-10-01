@@ -3,8 +3,8 @@
 `scraps/<topic>/` に置いた Markdown を、Zenn のスクラップとして投稿・照合する CLI です。
 記事と本は GitHub 連携と zenn-cli で扱い、このツールはスクラップだけに使います。
 
-Zenn の Public API(Bearer 認証、仕様は https://zenn.dev/openapi.yaml)が一般ユーザーに開放されるまでの場つなぎとして、Zenn 専用のブラウザプロファイルを Playwright で開き、zenn.dev のページの中から内部 API を呼びます。
-Cookie は取り出しません。セッションは専用プロファイルのフォルダに残るだけです。
+Zenn の Public API(Bearer 認証、仕様は https://zenn.dev/openapi.yaml)が一般ユーザーに開放されるまでの場つなぎとして、普段の Chrome(Claude in Chrome 拡張)で zenn.dev のページの中から内部 API を呼びます(relay)。Cookie は取り出しません。
+Playwright の専用プロファイルから送る経路(`login` / `post --execute`)もコードには残っていますが、2026-10-02 に Zenn のログインでロボットの検証に弾かれたため、使えません(下の「専用プロファイルについて」)。
 Public API が開放されたら(設定画面に「APIキー」タブが出たら)、`--transport public-api` に切り替えます。
 
 原本は公開リポジトリ https://github.com/ctenopoma/zenn_scraps_automate の `tools/scrap/` です。Zenn の GitHub 連携リポジトリには、このフォルダをコピーして使います(下の「導入」)。
@@ -18,17 +18,18 @@ Public API が開放されたら(設定画面に「APIキー」タブが出た�
 | --- | --- |
 | 共通 | Zenn のアカウント、git、uv(Python 3.12 は uv が自動で用意する)、PyPI と zenn.dev への接続。Zenn の API キーは不要 |
 | 普段の Chrome から(relay) | Claude Code と Claude in Chrome 拡張(1.0.36 以降)。Anthropic のプランを直接契約していること(Pro / Max / Team / Enterprise)。`/login` でサインインしていること(API キーや `claude setup-token` の長期トークンでは連携が無効)。ブラウザは Chrome / Edge / ほかの Chromium 系で、WSL は非対応。`claude --chrome` で起動するか、`/chrome` で既定で有効にする。その Chrome で Zenn にログインし、拡張機能のサイト権限で zenn.dev を許可する。出典: https://code.claude.com/docs/en/chrome |
-| 専用プロファイルから(`post --execute`) | インストール済みの Chrome(既定)か Edge(`--channel msedge`)。専用プロファイルへのメールログイン(初回だけ)。Claude Code と拡張機能は不要。Chrome の起動と未ログインの判定までは確認済みで、ログインから投稿までは通して試していない |
+| 専用プロファイルから(`post --execute`) | **使えない。** 2026-10-02、Windows 11 で Playwright が起動した Chrome から Zenn にメールでログインしようとしたところ、ロボットの検証で弾かれた。回避はしない(Zenn のルールとの照合で決めた条件) |
 | Public API から(`--transport public-api`) | Zenn の API キー。2026-10 時点では一般ユーザーに発行されていない。模擬サーバーでのテストのみ |
 
 要らないもの: Node.js(テストの一部で使うだけで、なければそのテストは飛ばされる)、Playwright のブラウザのダウンロード(`playwright install`)、Python の個別インストール。
-動作を確認したのは Windows 11、uv 0.10.3、Chrome、Python 3.12(uv が用意したもの)です。macOS と Linux では試していません。導入手順のコマンドも PowerShell です。
+動作を確認したのは Windows 11、uv 0.10.3、Chrome、Python 3.12(uv が用意したもの)です。導入手順のコマンドも PowerShell です。
+WSL(Ubuntu 24.04)では、導入・dry-run・照合までを確かめました。WSL からは送れません(relay は WSL 非対応、専用プロファイルはログインで弾かれる)。WSL で原稿を書き、送るのは Windows 側の Claude Code から行います。macOS は試していません。
 
 ## 守ること
 
 Zenn のルールとの照合(上記 05)で決めた条件です。ツールにも組み込んであります。
 
-- **人がレビューしてから送る** 既定は dry-run です。表示された本文の一覧を確認してから `--execute` を付けます
+- **人がレビューしてから送る** まず dry-run(`post`)で本文の一覧を確認します。送るのはユーザーが指示したときだけです
 - **人が実行を指示する** 定期実行(タスクスケジューラ、cron)や CI での無人実行はしません。環境変数 `CI` などがあると送信を拒否します
 - **少量にする** 1日に送るコメント数に上限があります(既定 20)。送信の間は 5 秒あけます
 - **止まったら再試行しない** 429 / 422 / 403、ログイン切れ、想定外の応答で止まります。POST は再試行しません
@@ -79,18 +80,11 @@ export UV_PROJECT_ENVIRONMENT=$HOME/zenn-scrap-wsl/.venv
 uv sync
 ```
 
-## ログイン(最初の1回とセッション切れのとき)
+## 専用プロファイルについて(使えない)
 
-```powershell
-uv run --project tools/scrap zenn-scrap login
-```
-
-Zenn 専用のプロファイルで Chrome が開くので、メールアドレス(確認コード)でログインします。
-普段使いの Chrome のログイン状態は使えません(Chrome 136 以降、既定のプロファイルは自動操作できない)。そのため専用プロファイルで一度だけログインします。
-Playwright が起動したブラウザでは Google ログインが弾かれることがあるため、メールログインを使います。
-
-プロファイルの既定の場所は `%LOCALAPPDATA%\zenn-scrap\profile-<ブラウザ>`(例: `profile-chrome`)です。Cookie の暗号化がブラウザごとに違うので、ブラウザごとに分けています。リポジトリの外に置きます(中に置こうとすると止まります)。
-場所は環境変数 `ZENN_SCRAP_PROFILE_DIR` で変えられます。
+`zenn-scrap login` は、Playwright で Zenn 専用のプロファイルの Chrome を開き、人がメールでログインする前提の機能です。
+2026-10-02 に試したところ、Zenn のログイン中にロボットの検証で弾かれました。Zenn が自動操作されたブラウザからのログインを望んでいない、という意思表示と受け止め、回避はしません。
+コードは残していますが、送るのは下の relay で行います。ブラウザの起動と、未ログインの判定(`GET /api/me` → 401)までは動くことを確かめています。
 
 ## スクラップを書く
 
@@ -123,18 +117,14 @@ comments: []
 uv run --project tools/scrap zenn-scrap post <topic>
 ```
 
-内容を確認したら `--execute` を付けて送ります。ブラウザが開き、1件ずつ送って `meta.yml` に書き戻します。
+内容を確認したら、次の「普段の Chrome から送る(relay)」の手順で送ります。
 
-```powershell
-uv run --project tools/scrap zenn-scrap post <topic> --execute
-```
-
-既存のスクラップに追記するときは、次の番号の `NNN.md` を足して同じコマンドを実行します。
+既存のスクラップに追記するときは、次の番号の `NNN.md` を足して同じ手順を繰り返します。
 `meta.yml` の title・topic_names・closed・can_others_post を変えた場合は、次の実行で反映します。
 
 ## 普段の Chrome から送る(relay)
 
-普段使いの Chrome に Claude in Chrome 拡張が入っていれば、専用プロファイルでのログインなしに、普段の Chrome のログイン状態で送れます(2026-10-02 の初回投稿はこの方法)。
+普段使いの Chrome に Claude in Chrome 拡張を入れ、普段の Chrome のログイン状態で送ります(2026-10-02 の初回投稿から、この方法で送っています)。
 Claude Code が拡張機能の JavaScript 実行で送り、送る内容と状態は CLI が決めます。
 
 1. `zenn-scrap relay <topic>` が次の1手の JavaScript を出します。作成前なら「作成 → 設定 → 最初のコメント」、作成後なら `--count N` で N 件のコメントをまとめて出せます
@@ -153,15 +143,19 @@ uv run --project tools/scrap zenn-scrap record <topic> "@result.json"
 ## 照合する
 
 ```powershell
-uv run --project tools/scrap zenn-scrap verify <topic>             # タイトル・設定・コメントの slug と並び
-uv run --project tools/scrap zenn-scrap verify <topic> --markdown  # ログインして Markdown も照合
+uv run --project tools/scrap zenn-scrap verify <topic>        # タイトル・設定・コメントの slug と並び(認証なしの GET)
+uv run --project tools/scrap zenn-scrap relay-verify <topic>  # Markdown も照合する JavaScript。普段の Chrome のタブで実行する
 ```
+
+`verify --markdown` は専用プロファイルを使うので、使えません。
 
 ## 止まったとき
 
 | 表示 | 対応 |
 | --- | --- |
-| `ログインが切れている` | `zenn-scrap login` でログインし直してから、同じコマンドを実行します |
+| `ログインしていない` / `ログインが切れている` | 普段の Chrome で Zenn にログインし直してから続けます |
+| `ブラウザ(…)を起動できなかった` | 専用プロファイルの経路です(使えません)。メッセージに対処が出ます(Linux の共有ライブラリ不足、ブラウザが見つからない など) |
+| ログイン画面でロボットの検証に弾かれる | 専用プロファイルの経路です。回避せず、relay を使います |
 | `HTTP 429` | 投稿数かリクエスト数の上限です。日をあらためます。再試行や間隔の調整で回避しようとしません |
 | `HTTP 422` / `HTTP 403` | 入力か権限の問題です。メッセージを読んで原稿を直します |
 | `結果を確認できなかった` | 送信の途中で通信が切れました。zenn.dev で投稿されたかを目で確かめ、`meta.yml` を手で直してから再開します |

@@ -68,6 +68,19 @@ def _shape(value: Any) -> Any:
     return type(value).__name__
 
 
+def launch_hint(message: str, channel: str) -> str:
+    """ブラウザを起動できなかったときの対処。Playwright のエラー文から判断する。"""
+    if "error while loading shared libraries" in message:
+        return ("Linux でブラウザの共有ライブラリが足りない。sudo で "
+                "`uv run --project tools/scrap playwright install-deps chromium` を実行するか、"
+                "Linux 版の Chrome を入れる")
+    if "is not found" in message or "Executable doesn't exist" in message:
+        if channel == "chromium":
+            return "Playwright の Chromium がない。`uv run --project tools/scrap playwright install chromium` を実行する"
+        return f"{channel} が見つからない。インストールするか、`--channel msedge` / `--channel chromium` を使う"
+    return "ブラウザのプロファイルを別のブラウザが使っていないか確かめる(同じプロファイルは同時に1つしか開けない)"
+
+
 def _find_username(data: Any) -> str | None:
     if isinstance(data, dict):
         if isinstance(data.get("username"), str):
@@ -110,22 +123,33 @@ class BrowserTransport:
 
     # --- ブラウザの起動と終了 ---
     def __enter__(self) -> "BrowserTransport":
+        from playwright.sync_api import Error as PlaywrightError
         from playwright.sync_api import sync_playwright
 
         self.profile_dir.mkdir(parents=True, exist_ok=True)
         self._pw = sync_playwright().start()
         channel = None if self.channel == "chromium" else self.channel
-        self._ctx = self._pw.chromium.launch_persistent_context(
-            str(self.profile_dir), channel=channel, headless=self.headless
-        )
+        try:
+            self._ctx = self._pw.chromium.launch_persistent_context(
+                str(self.profile_dir), channel=channel, headless=self.headless
+            )
+        except PlaywrightError as e:
+            self._pw.stop()
+            self._pw = None
+            first = str(e).strip().splitlines()[0] if str(e).strip() else type(e).__name__
+            raise StopPosting(f"ブラウザ({self.channel})を起動できなかった。{launch_hint(str(e), self.channel)}", detail=first) from e
         self.page = self._ctx.pages[0] if self._ctx.pages else self._ctx.new_page()
         self.page.goto(ORIGIN + "/", wait_until="domcontentloaded")
         return self
 
     def __exit__(self, *exc: object) -> None:
+        from playwright.sync_api import Error as PlaywrightError
+
         try:
             if self._ctx is not None:
                 self._ctx.close()
+        except PlaywrightError:
+            pass  # 人がウィンドウを閉じたあとは、閉じる対象がない
         finally:
             if self._pw is not None:
                 self._pw.stop()

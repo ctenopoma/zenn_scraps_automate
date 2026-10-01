@@ -1,6 +1,6 @@
 # 原稿を送る
 
-`zs` は `uv run --project <原稿リポジトリ>/tools/scrap zenn-scrap` の略。送り方は `local.md` に書いてある。
+`zs` は `uv run --project <原稿リポジトリ>/tools/scrap zenn-scrap` の略。送るのは A の relay。
 
 ## 0. dry-run
 
@@ -49,15 +49,10 @@ JavaScript は本文の sha256 をページ側で照合し、一致したとき�
 
 6. 開いたタブを `tabs_close_mcp` で閉じる
 
-## B. 専用プロファイルから送る
+## B. 専用プロファイルから送る(使えない)
 
-```
-zs login                       # 初回だけ。開いた Chrome でメール(確認コード)ログイン
-zs post <topic> --execute
-zs verify <topic>
-```
-
-この経路は、Chrome の起動と未ログインの判定までしか確かめていない。初めて使うときは、限定公開のスクラップで1件だけ試す。
+`zs login` / `zs post <topic> --execute` は、2026-10-02 に Zenn のログインでロボットの検証に弾かれた。回避はしない。送るのは A の relay だけ。
+`zs verify --markdown` も専用プロファイルを使うので、Markdown の照合は A の 5 のとおり `relay-verify` で行う。
 
 ## 送ったあと
 

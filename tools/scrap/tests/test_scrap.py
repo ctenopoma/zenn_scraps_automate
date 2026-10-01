@@ -212,3 +212,12 @@ def test_browser_module_imports_and_shape():
     }
     assert _find_username({"user": {"username": "me"}}) == "me"
     assert default_profile_dir("chrome").name == "profile-chrome"
+
+
+def test_launch_hint():
+    from zenn_scrap.transports.browser import launch_hint
+
+    linux = "chrome-headless-shell: error while loading shared libraries: libnspr4.so: cannot open shared object file"
+    assert "install-deps" in launch_hint(linux, "chromium")
+    assert "--channel msedge" in launch_hint('Chromium distribution "chrome" is not found at /opt/google/chrome/chrome', "chrome")
+    assert "playwright install chromium" in launch_hint("Executable doesn't exist at /home/x/.cache/ms-playwright/...", "chromium")

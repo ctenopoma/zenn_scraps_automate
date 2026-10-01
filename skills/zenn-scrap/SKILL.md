@@ -13,7 +13,7 @@ description: 調べたこと・試したことを、まとまりごとに逐次 
 
 ## 最初に
 
-このスキルのフォルダの `local.md` を読む。原稿リポジトリの場所と送り方(relay か専用プロファイルか)が書いてある。
+このスキルのフォルダの `local.md` を読む。原稿リポジトリの場所が書いてある。送るのは relay(普段の Chrome)だけ。
 `local.md` がなければ、まだ導入していない。[references/install.md](references/install.md) に進む。
 
 以下、`zs` は `uv run --project <原稿リポジトリ>/tools/scrap zenn-scrap` の略。
