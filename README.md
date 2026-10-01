@@ -34,7 +34,7 @@ scraps/<topic>/
 
 ## 状態
 
-- [x] 投稿方式の調査（このブランチ: `research/posting-approaches`）
+- [x] 投稿方式の調査（`docs/research/`）
 - [x] API キーの発行確認 → 404（一般ユーザーには未開放）。投稿経路は差し替え式にする
 - [x] 当面の投稿経路の決定 → 普段の Chrome から送る relay（Public API 開放までの場つなぎ）。専用プロファイルの Playwright は、ログインでロボットの検証に弾かれたので使わない。Zenn のルールとの照合は `docs/research/05`
 - [x] `post` / `verify` の実装（`tools/scrap/`）
