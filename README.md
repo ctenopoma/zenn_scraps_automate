@@ -40,4 +40,4 @@ scraps/<topic>/
 - [x] `post` / `verify` の実装（`tools/scrap/`）
 - [x] 限定公開でのテスト投稿（2026-10-02、普段の Chrome から `relay` で 12 コメント。照合はすべて一致。その後ユーザーが公開に切り替え、2026-10-02 時点で 19 コメント）
 - [x] 調査・試行を逐次スクラップに記録する Claude Code スキル（`skills/zenn-scrap/`）
-- [ ] Public API が開放されたら transport を `public-api` に切り替える
+- [ ] （監視はしない）Public API の開放に気づいたら、transport を `public-api` に切り替える

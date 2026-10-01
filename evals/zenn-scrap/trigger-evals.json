@@ -1,0 +1,22 @@
+[
+  {"query": "Rust の tokio で非同期 HTTP クライアントを試してみる。わかったことは区切りごとに Zenn のスクラップに残しながら進めて", "should_trigger": true},
+  {"query": "さっきの DuckDB の検証結果、スクラップに追記しといて。read_parquet のほうが CSV より 5 倍くらい速かったやつ", "should_trigger": true},
+  {"query": "zenn-scrap を新しい PC にセットアップしたい。何から始めればいい？", "should_trigger": true},
+  {"query": "relay でスクラップを投稿したら HTTP 422 が返ってきて止まった。どうすればいい？", "should_trigger": true},
+  {"query": "LangGraph の調査、チャットに最後にまとめて書かれると読みにくいから、わかったことをまとまりごとにスクラップに記録しながらやってほしい", "should_trigger": true},
+  {"query": "今日やった Terraform の import ブロックの試行錯誤を、調査ログとして Zenn に残したい。新しいスクラップで、限定公開でお願い", "should_trigger": true},
+  {"query": "zenn-scrap verify で can_others_post が違うって NG が出たんだけど", "should_trigger": true},
+  {"query": "この Kubernetes の検証の過程も、スクラップに載せておいて", "should_trigger": true},
+  {"query": "WSL の同僚にも zenn-scrap を入れたいんだけど、前提条件って何がある？", "should_trigger": true},
+  {"query": "Polars の lazy API を試すので、作業ログを Zenn のスクラップに逐次投稿して。送る前に一応確認してね", "should_trigger": true},
+  {"query": "Zenn の記事を新しく書きたい。zenn-cli で new:article して、Polars 入門の下書きを articles/ に作って", "should_trigger": false},
+  {"query": "Zenn の本の Chapter 3 の誤字を直して、npm run fmt もかけておいて", "should_trigger": false},
+  {"query": "この調査結果を docs/research/06-duckdb.md にまとめて。出典 URL も付けて", "should_trigger": false},
+  {"query": "Qiita に今日の学びを投稿したい。Qiita API で投稿する Python スクリプトを書いて", "should_trigger": false},
+  {"query": "Zenn の Public API の openapi.yaml を読んで、エンドポイントの一覧を表にして教えて", "should_trigger": false},
+  {"query": "Notion の作業ログのページに、今日やったことを箇条書きで追記して", "should_trigger": false},
+  {"query": "GitHub の Issue にこのバグの再現手順を書いて起票して", "should_trigger": false},
+  {"query": "自分の Zenn のスクラップを全部 Markdown にエクスポートしてバックアップしたい", "should_trigger": false},
+  {"query": "Claude in Chrome の拡張が反応しなくなった。再接続ってどうやるんだっけ", "should_trigger": false},
+  {"query": "Playwright でログイン画面の E2E テストを書いて。メールアドレスとパスワードを入力して送信するところまで", "should_trigger": false}
+]
