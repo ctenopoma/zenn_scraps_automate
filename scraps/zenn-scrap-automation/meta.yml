@@ -1,0 +1,9 @@
+# スクラップ1件分のメタデータ。投稿ツールが slug / comments を書き戻す想定。
+title: "AIでZennスクラップを自動投稿する仕組みを作る（調査ログ）"
+topic_names: [zenn, zenncli, ai, playwright, claudecode]   # 最大5件
+unlisted: true        # 最初は限定公開でテスト（作成時にしか選べない）
+closed: false
+can_others_post: false
+# --- 以下は投稿ツールが管理（手で編集しない） ---
+slug: null
+comments: []          # [{file: 001.md, comment_slug: ..., sha256: ..., posted_at: ...}]

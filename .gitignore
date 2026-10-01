@@ -1,0 +1,6 @@
+# secrets
+.env
+.env.*
+*.storageState.json
+storage-state*.json
+node_modules/
