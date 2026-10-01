@@ -3,6 +3,7 @@
 このリポジトリは、AI が書いた Markdown を Zenn のスクラップとして自動投稿・検証する仕組みの**調査メモと、ツールの原本**（`tools/scrap/`）を置く。
 Zenn の GitHub 連携リポジトリ `C:\work_space\zenn` には、`tools/scrap/` をコピーして導入している。ツールを直すときはこのリポジトリの原本を直し、コピーし直す。
 投稿するスクラップの原稿（`scraps/<topic>/`）は `C:\work_space\zenn` にある（2026-10-01 に移した）。
+Claude Code のスキル `zenn-scrap` の原本は `skills/zenn-scrap/`。`~/.claude/skills/zenn-scrap/` にコピーして使い、人ごとの設定は `local.md`（原本には入れない）。直すときは原本を直してコピーし直す。
 
 ## 必ず守ること
 

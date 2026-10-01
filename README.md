@@ -20,6 +20,7 @@ AI が書いた Markdown を、Zenn のスクラップとして自動投稿・�
 docs/research/        調査メモ（方針・規約、Public API、内部API、ブラウザ自動化、比較、Zenn のルールとの照合）
 docs/HANDOFF.md       引き継ぎメモ
 tools/scrap/          zenn-scrap（login / post / relay / record / verify）の原本。手順は tools/scrap/README.md
+skills/zenn-scrap/    Claude Code のスキルの原本。調べたこと・試したことを区切りごとにスクラップへ記録する。~/.claude/skills/ にコピーして使う
 ```
 
 導入先（Zenn の GitHub 連携リポジトリ）の構成は次のとおり。

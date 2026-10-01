@@ -31,7 +31,7 @@ const call = async (method, path, body) => {
   if (r.status < 200 || r.status >= 300) out.trace.push({method, path, status: r.status, response: shape(d)});
   return {status: r.status, data: d, ok: r.status >= 200 && r.status < 300};
 };
-const out = {topic: job.topic, kind: job.kind, file: job.file || null, sha256: job.sha256 || null, trace: []};
+const out = {topic: job.topic, kind: job.kind, file: job.file || null, sha_prefix: job.sha256 ? job.sha256.slice(0, 12) : null, trace: []};
 const save = () => sessionStorage.setItem("zenn-scrap:last", JSON.stringify(out));
 // scrap と topic_names を1回で送ると topics しか反映されない(2026-10-02 に実測)。設定画面と同じく分けて送る
 const putSettings = async (slug) => {
@@ -153,7 +153,9 @@ def record(scrap: Scrap, result: dict[str, Any], *, now: datetime | None = None)
         cf = files[name]
         if name in scrap.posted():
             raise ValueError(f"{name} はすでに投稿済みとして記録されている")
-        if result.get("sha256") != cf.sha256:
+        # 表示で全桁が伏せられることがあるので、先頭12桁(sha_prefix)でも照合できるようにする
+        sent = str(result.get("sha256") or result.get("sha_prefix") or "")
+        if len(sent) < 12 or not cf.sha256.startswith(sent):
             raise ValueError(f"{name}: 送った本文の sha256 が手元のファイルと違う")
         at = result.get("posted_at")
         posted_at = datetime.fromisoformat(str(at).replace("Z", "+00:00")).astimezone() if at else (now or datetime.now().astimezone())

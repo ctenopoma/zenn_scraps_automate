@@ -62,6 +62,7 @@ def test_create_flow_and_record(tmp_path):
     assert sent[3]["body"] == {"topic_names": ["zenn", "ai"]}
     assert sent[4]["body"] == {"commentable_type": "Scrap", "commentable_id": 77, "body_markdown": "一つ目"}
 
+    assert "sha256" not in out and len(out["sha_prefix"]) == 12  # 全桁は表示で伏せられることがあるので返さない
     record(scrap, out)
     s = Scrap(root / "scraps" / "t")
     assert s.slug == "newslug000001" and s.scrap_id == 77 and list(s.posted()) == ["001.md"]

@@ -4,3 +4,6 @@
 *.storageState.json
 storage-state*.json
 node_modules/
+
+# スキルの個人設定(人ごとに違う)
+skills/*/local.md
